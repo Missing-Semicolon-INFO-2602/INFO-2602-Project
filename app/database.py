@@ -1,6 +1,8 @@
 import logging
+import requests
 from sqlmodel import SQLModel, Session, create_engine
 from app.config import get_settings
+from app.models.user import *
 from contextlib import contextmanager
 
 logger = logging.getLogger(__name__)
@@ -36,3 +38,23 @@ def get_session():
 @contextmanager
 def get_cli_session():
     yield from _session_generator()
+
+def init():
+    drop_all()
+    create_db_and_tables()
+    with get_cli_session() as db:
+        admin_tester = Admin(username="bob", email="bob@test.mail", password="1234")
+        db.add(admin_tester)
+        db.commit()
+        
+        # #trying a thing tbh
+        # url = "https://api.inaturalist.org/v1/taxa?rank=species&per_page=200"
+        # data = requests.get(url).json()
+        
+        # inaturalist_data = [
+        #     item for item in data.get('results', []) 
+        #     if 1 in item.get('ancestor_ids', [])
+        # ]
+        
+        # print (inaturalist_data[0])
+        
