@@ -10,12 +10,12 @@ from contextlib import asynccontextmanager
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("Loading models, this may take a while...")
-    print("Note: If this is the first time the app has been run, models will need to be downloaded and cached, future runs will be much faster")
-    from inference import florence, bioclip
-    app.state.florence = florence
-    app.state.bioclip = bioclip
-    print("Models loaded.")
+    # print("Loading models, this may take a while...")
+    # print("Note: If this is the first time the app has been run, models will need to be downloaded and cached, future runs will be much faster")
+    # from app.inference import florence, bioclip
+    # app.state.florence = florence
+    # app.state.bioclip = bioclip
+    # print("Models loaded.")
     
     from app.database import init
     init()

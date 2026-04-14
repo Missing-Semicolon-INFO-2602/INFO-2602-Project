@@ -2,14 +2,14 @@ import base64
 import tempfile
 import time
 from bioclip import TreeOfLifeClassifier, Rank, BIOCLIP_V1_MODEL_STR
-import inference  # leave this here to make sure HF_HOME is set before model loads
+import app.inference as inference  # leave this here to make sure HF_HOME is set before model loads
 
 classifier = TreeOfLifeClassifier() # bioclip v2 ~1.6GB
 # classifier = TreeOfLifeClassifier(model_str=BIOCLIP_V1_MODEL_STR) # bioclip v1 ~600MB
 
 RANK_MAP = {r.name.lower(): r for r in Rank}
 
-def infer(image_b64: str, ranks: list[str] = None) -> dict[str, list[dict]]:
+def infer(image_b64: str, ranks=["species"]) -> dict[str, list[dict]]:
     # valid ranks: "kingdom", "phylum", "class", "order", "family", "genus", "species"
     if ranks is None:
         ranks = list(RANK_MAP.keys())

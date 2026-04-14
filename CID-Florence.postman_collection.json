@@ -1,0 +1,145 @@
+{
+  "info": {
+    "name": "CID Florence API",
+    "_postman_id": "2c9f27c0-8e93-44b4-bd3f-1ca9d51cc1b2",
+    "description": "Collection for testing CID Florence routes.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000"
+    }
+  ],
+  "item": [
+    {
+      "name": "Home Redirect",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["/"]
+        }
+      }
+    },
+    {
+      "name": "GET Login Page",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/login",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["login"]
+        }
+      }
+    },
+    {
+      "name": "POST Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {"key": "username", "value": "alice", "type": "text"},
+            {"key": "password", "value": "1234", "type": "text"}
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/login",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["login"]
+        }
+      }
+    },
+    {
+      "name": "GET Register Page",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/register",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["register"]
+        }
+      }
+    },
+    {
+      "name": "POST Register",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {"key": "username", "value": "newuser", "type": "text"},
+            {"key": "email", "value": "newuser@test.mail", "type": "text"},
+            {"key": "password", "value": "1234", "type": "text"}
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/register",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["register"]
+        }
+      }
+    },
+    {
+      "name": "GET Leaderboard",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/leaderboard",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["leaderboard"]
+        }
+      }
+    },
+    {
+      "name": "GET API Users",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/users",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "users"]
+        }
+      }
+    },
+    {
+      "name": "GET Logout",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/logout",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["logout"]
+        }
+      }
+    }
+  ]
+}
