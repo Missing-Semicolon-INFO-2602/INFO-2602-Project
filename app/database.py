@@ -1,9 +1,11 @@
 import logging
-import requests
 from sqlmodel import SQLModel, Session, create_engine
 from app.config import get_settings
 from app.models.user import *
 from contextlib import contextmanager
+from typing import Annotated
+from fastapi import Depends
+from sqlmodel import Session
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +35,10 @@ def _session_generator():
             session.close()
 
 def get_session():
-    yield from _session_generator()
+    with Session(engine) as session:
+        yield session
+
+SessionDep = Annotated[Session, Depends(get_session)]
 
 @contextmanager
 def get_cli_session():
@@ -57,4 +62,6 @@ def init():
         # ]
         
         # print (inaturalist_data[0])
+
+
         

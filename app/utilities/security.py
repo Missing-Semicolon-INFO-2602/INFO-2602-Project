@@ -10,7 +10,7 @@ from fastapi.security import OAuth2PasswordBearer
 from typing import Annotated
 from fastapi import Depends, HTTPException, status, Request
 
-
+ALGORITHM = "HS256"
 password_hash = PasswordHash.recommended()
 
 def encrypt_password(password:str):

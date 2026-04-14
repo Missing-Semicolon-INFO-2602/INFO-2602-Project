@@ -2,6 +2,8 @@ from sqlmodel import Field, SQLModel, Relationship
 from typing import Optional, TYPE_CHECKING
 from pydantic import EmailStr, BaseModel
 
+from app.models.user_animal import UserAnimal
+
 # attributes for all taxonomic levels
 # date logged
 if TYPE_CHECKING:

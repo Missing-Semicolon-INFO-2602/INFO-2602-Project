@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Page</title>
+  <link rel="stylesheet" href="/static/css/app.css" />
+</head>
+
+<body>
+
+<div class="page">
+
+  <!-- TOP PROFILE BAR -->
+  <div class="profile-header">
+    User profile
+  </div>
+
+  <!-- COLLECTED ANIMALS SECTION -->
+  <div class="collection-container">
+
+    <h2 class="section-title">Collected Animals</h2>
+
+    <div class="animal-grid">
+
+      {% for animal in animals %}
+
+      <div class="animal-card">
+        <div class="animal-image">
+          {{ animal.emoji }}
+        </div>
+        <div class="animal-name">
+          {{ animal.name }}
+        </div>
+      </div>
+
+      {% endfor %}
+
+      <a href="/">
+        <button>Back</button>
+      </a>
+
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>
