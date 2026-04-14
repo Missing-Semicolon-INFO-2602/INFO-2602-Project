@@ -2,6 +2,8 @@ import logging
 import requests
 from datetime import datetime, timezone, timedelta
 from sqlmodel import SQLModel, Session, create_engine, select, func
+from typing import Annotated
+from fastapi import Depends
 from app.config import get_settings
 from app.models.user import *
 from app.models.animal import Animal
@@ -37,7 +39,10 @@ def _session_generator():
             session.close()
 
 def get_session():
-    yield from _session_generator()
+    with Session(engine) as session:
+        yield session
+
+SessionDep = Annotated[Session, Depends(get_session)]
 
 @contextmanager
 def get_cli_session():
@@ -219,6 +224,3 @@ def init():
             get_animals()
         else:
             print("Animals already stored in db.")
-
-        
-              

@@ -13,7 +13,7 @@ from app.models.user import User
 from sqlmodel import select
 from fastapi.security import OAuth2PasswordBearer
 
-
+ALGORITHM = "HS256"
 password_hash = PasswordHash.recommended()
 
 def encrypt_password(password:str):
