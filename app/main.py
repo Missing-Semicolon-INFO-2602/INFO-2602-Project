@@ -65,5 +65,6 @@ def bioclip_infer(req: BioclipRequest):
         raise HTTPException(status_code=400, detail=str(e))
     return result
 
+
 if __name__ == "__main__":
     uvicorn.run("app.main:app", host=get_settings().app_host, port=get_settings().app_port, reload=get_settings().env.lower()!="production")
