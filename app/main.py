@@ -41,29 +41,5 @@ async def unauthorized_redirect_handler(request: Request, exc: Exception):
     )
     
 
-class FlorenceRequest(BaseModel):
-    image_b64: str
-    task: str = "<CAPTION>"
-
-
-class BioclipRequest(BaseModel):
-    image_b64: str
-    ranks: list[str] = None
-
-
-@app.post("/florence")
-def florence_infer(req: FlorenceRequest):
-    result = app.state.florence.infer(req.image_b64, req.task)
-    return result
-
-
-@app.post("/bioclip")
-def bioclip_infer(req: BioclipRequest):
-    try:
-        result = app.state.bioclip.infer(req.image_b64, req.ranks)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    return result
-
 if __name__ == "__main__":
     uvicorn.run("app.main:app", host=get_settings().app_host, port=get_settings().app_port, reload=get_settings().env.lower()!="production")

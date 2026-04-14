@@ -1,6 +1,7 @@
+from datetime import date, timedelta
 from sqlmodel import Field, SQLModel, Relationship
-from typing import Optional, TYPE_CHECKING
-from pydantic import EmailStr, BaseModel
+from typing import List, Optional, TYPE_CHECKING
+from pydantic import EmailStr, model_validator
 from app.models.user_animal import UserAnimal
 
 if TYPE_CHECKING:
@@ -14,7 +15,25 @@ class UserBase(SQLModel,):
 
 class User(UserBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    animal: Optional["Animal"] = Relationship(back_populates='logger', link_model=UserAnimal)
+    animals: List["Animal"] = Relationship(back_populates='logger', link_model=UserAnimal)
+    weekly_points: Optional[int] = Field(default=0)
+    
+    @model_validator(mode="after")
+    def get_weekly_points(self) -> int:
+        today = date.today()
+        days_since_sunday = (today.weekday() - 6) % 7
+        week_start = today - timedelta(days=days_since_sunday)
+
+        if not self.animals:
+            self.weekly_points=0
+
+        count=sum(
+            1 for animal in self.animals
+            if getattr(animal, 'date_added', None) is not None
+            and getattr(animal.date_added, 'date', None) is not None
+            and animal.date_added.date() >= week_start
+        )
+        self.weekly_points=count
     
 class Admin(UserBase, table=True):    
     id: Optional[int] = Field(default=None, primary_key=True)
