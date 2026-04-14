@@ -9,7 +9,7 @@ class AuthService:
 
     def authenticate_user(self, username: str, password: str) -> Optional[str]:
         user = self.user_repo.get_by_username(username)
-        if not user or not verify_password(plaintext_password=password, encrypted_password=user.password):
+        if not user or not verify_password(plaintext_password=password, encrypted_password=encrypt_password(user.password)):
             return None
         access_token = create_access_token(data={"sub": f"{user.id}", "role": user.role})
         return access_token

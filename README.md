@@ -2,9 +2,16 @@
 
 Hello! This is a Pokedex made for capturing real life animals, created by the group Missing Semicolon.
 
-Our lightweight Vision Language Models, Florence-2 and BioClip, will tell you what species it is. (P.S.: Running the init() funcition will pre-load them into memory for the best user experience.)
+Our lightweight Vision Language Model, BioClip, will tell you what species it is. (P.S.: Running the init() funcition will pre-load them into memory for the best user experience.)
 
-Check out all your new friends in a photo gallery using the following steps:
+Get started using the following steps:
+
+- Create your user account or log in
+- Snap a picture
+- Upload it
+- See them in your gallery!
+
+You can also browse our animal wiki which uses iNaturalist and GBIF APIs to show you the most popular species. If you find an animal that's not there, you can upload the image and we'll add it for you!
 
 # FastAPIStarter
 
