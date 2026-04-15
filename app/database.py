@@ -87,7 +87,6 @@ def get_animals(): #works!! Yippee
                             class_=animal.get("class", "Unknown"),
                             order=animal.get("order", "Unknown"),
                             family=animal.get("family", "Unknown"),
-                            genus=animal.get("genus", "Unknown"),
                             species=animal.get("species", "Unknown"),
                             common_name=animal.get("preferred_common_name", "Unknown"),
                             pic=animal.get("photo_url", "Unknown")
@@ -146,7 +145,6 @@ def add_user_animal(user, genus, species, img_b64):
                             class_=animal.get("class", "Unknown"),
                             order=animal.get("order", "Unknown"),
                             family=animal.get("family", "Unknown"),
-                            genus=animal.get("genus", "Unknown"),
                             species=animal.get("species", "Unknown"),
                             common_name=animal.get("preferred_common_name", "Unknown"),
                             pic=animal.get("photo_url", "Unknown")
@@ -163,9 +161,14 @@ def add_user_animal(user, genus, species, img_b64):
                 db.rollback()
 
         if find_animal:
-            user_animal = UserAnimal(user_id=user.id, animal_id=find_animal.animal_id, user_pic=img_b64)
-            db.add(user_animal)
-            db.commit()
+            existing = db.exec(select(UserAnimal).where(UserAnimal.user_id == user.id, UserAnimal.animal_id == find_animal.animal_id)).first()
+            if not existing:
+                user_animal = UserAnimal(user_id=user.id, animal_id=find_animal.animal_id, user_pic=img_b64)
+                db.add(user_animal)
+                db.commit()
+            db.refresh(find_animal)
+            return find_animal
+        return None
 
 def seed_demo_users(db):
     demo_users = [

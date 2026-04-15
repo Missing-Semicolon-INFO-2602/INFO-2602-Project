@@ -15,7 +15,11 @@
   </div>
 
   <div class="main-content">
-    <!-- empty for now -->
+    <ol class="leaderboard-list">
+      {% for u in users %}
+      <li>{{ u.username }} &mdash; {{ u.weekly_points }}</li>
+      {% endfor %}
+    </ol>
   </div>
 
 </div>
