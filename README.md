@@ -2,16 +2,16 @@
 
 Hello! This is a Pokedex made for capturing real life animals, created by the group Missing Semicolon.
 
-Our lightweight Vision Language Model, BioClip, will tell you what species it is. (P.S.: Running the init() funcition will pre-load them into memory for the best user experience.)
+Our lightweight Vision Language Model, BioCLIP, will tell you what species it is. (P.S.: the server pre-loads the model and warms up Torch kernels during startup for the best user experience.)
 
 Get started using the following steps:
 
 - Create your user account or log in
 - Snap a picture
-- Upload it
-- See them in your gallery!
+- Upload it on the Scan Animal page
+- See it in My Collection (with your own photo) and on your personal Animal Map!
 
-You can also browse our animal wiki which uses iNaturalist and GBIF APIs to show you the most popular species. If you find an animal that's not there, you can upload the image and we'll add it for you!
+You can also browse our animal database, which is seeded from the iNaturalist and GBIF APIs. If you catch an animal that's not in the database yet, we'll look it up and add it for you.
 
 ## What is the Model View Controller (MVC) pattern?
 
@@ -36,18 +36,18 @@ The job of the **service layer** is to handle the **RULES** of the application. 
 
 A FastAPI application for animal/species identification using a vision language model:
 
-- **BioCLIP v2** (Imageomics) - taxonomic classification at any rank
+- **BioCLIP v2** (Imageomics) — taxonomic classification at species rank
 
-## Models
+## Model
 
-| Model / Data          | Size    | Purpose                                                                 | Speed (CPU)                           |
+| Model / Data          | Size    | Purpose                                                                 | Notes                                 |
 | --------------------- | ------- | ----------------------------------------------------------------------- | ------------------------------------- |
-| BioCLIP v2 (ViT-L/14) | ~1.6 GB | Species/taxonomy classification                                         | ~9s (all 7 ranks)                     |
+| BioCLIP v2 (ViT-L/14) | ~1.6 GB | Species classification                                                  | Downloaded automatically on first run |
 | TreeOfLife-200M       | ~2.6 GB | Taxonomy labels and precomputed text embeddings for BioCLIP's 952K taxa | Downloaded automatically on first run |
 
 ### Memory requirements
 
-The model is loaded into RAM at startup and stay resident for the lifetime of the server.
+The model is loaded into RAM at startup and stays resident for the lifetime of the server.
 
 |            | Disk      | RAM (CPU / float32) | VRAM (GPU / float16) |
 | ---------- | --------- | ------------------- | -------------------- |
@@ -60,29 +60,19 @@ On CPU, the model uses `float32` (4 bytes per parameter), so RAM usage is roughl
 
 ### Startup
 
-On startup, the model is loaded into memory. The first few requests to each endpoint will be slower than steady state (~2-3x) due to PyTorch's lazy kernel initialization. Performance stabilizes after 2-3 requests.
+On startup the model is loaded and a warmup inference runs so Torch kernels are compiled before the first real request. After that, steady-state latency kicks in immediately. The classifier automatically uses the GPU when CUDA is available and falls back to CPU otherwise.
 
-### Temp files
+### Why is CPU inference slow?
 
-BioCLIP's classifier expects a file path, not raw image data. Each BioCLIP request writes the decoded image to a temporary file in `/tmp/` which is **not** automatically cleaned up. On long-running servers, these temp files will accumulate. Consider adding periodic cleanup or a tmpwatch/cron job.
+The model runs on CPU with `float32` when no GPU is available. On a CUDA GPU it uses `float16` and is significantly faster. Scanimal only asks for the top species prediction (`k=1`) per request to keep work to a minimum.
 
-### Why is inference slow?
+### Swapping BioCLIP versions
 
-Both models run on CPU by default (`float32`). On a CUDA GPU they use `float16` and are significantly faster. Florence is especially slow on CPU because it's a generative model that decodes tokens one at a time.
-
-### BioCLIP ranks
-
-BioCLIP classifies images at any taxonomic rank:
-
-`kingdom`, `phylum`, `class`, `order`, `family`, `genus`, `species`
-
-Omitting the `ranks` field returns all 7 ranks. BioCLIP v2 covers 952K taxa.
-
-To use the smaller BioCLIP v1 (~600 MB, 450K taxa), edit `inference/bioclip.py`:
+To use the smaller BioCLIP v1 (~600 MB, 450K taxa), edit `app/inference/bioclip.py`:
 
 ```python
 from bioclip import BIOCLIP_V1_MODEL_STR
-classifier = TreeOfLifeClassifier(model_str=BIOCLIP_V1_MODEL_STR)
+classifier = TreeOfLifeClassifier(model_str=BIOCLIP_V1_MODEL_STR, device=_device)
 ```
 
 ## Requirements
@@ -96,6 +86,7 @@ classifier = TreeOfLifeClassifier(model_str=BIOCLIP_V1_MODEL_STR)
 python -m venv .venv
 source .venv/bin/activate
 pip install .
+cp env.example .env
 ```
 
 For CPU-only PyTorch installations:
@@ -104,44 +95,97 @@ For CPU-only PyTorch installations:
 pip install . --extra-index-url https://download.pytorch.org/whl/cpu
 ```
 
+The `.env` file is read by `app/config.py` via `pydantic-settings`. The defaults (SQLite, `ENV=development`) are fine for local dev.
+
 On first run, models are downloaded and cached to `.huggingface/models/`. Subsequent runs load from cache.
 
 ## Running
 
+Development server (reload on file changes):
+
 ```bash
-python main.py
+fastapi dev main.py
+```
+
+Alternatively:
+
+```bash
+python main.py          # or
+python -m main          # or
+uvicorn main:app        # no reload
 ```
 
 The server starts on `http://localhost:8000`. API docs are available at `http://localhost:8000/docs`.
 
-## API Endpoints
+### Demo accounts
 
-### POST /bioclip
+The app seeds demo users on first boot. Sign in at `/login` with any of these (password is always `1234`):
 
-Classify an image at one or more taxonomic ranks.
+| Username | Role  |
+| -------- | ----- |
+| bob      | admin |
+| john     | user  |
+| alice    | user  |
+| charlie  | user  |
+
+### Pages
+
+| Path           | What it does                                                                 |
+| -------------- | ---------------------------------------------------------------------------- |
+| `/`            | Redirects to `/app` (home) when logged in, otherwise to `/login`             |
+| `/app`         | Home dashboard with the nav cards                                            |
+| `/results`     | Drag / drop an image to scan an animal                                       |
+| `/collection`  | Your personal gallery plus a radial tree of species you've caught            |
+| `/database`    | Browse and search the full animal catalog (iNaturalist + GBIF seeded)        |
+| `/leaderboard` | Ranked list of users by distinct species caught this week                    |
+| `/friends`     | Friends page                                                                 |
+| `/admin`       | Admin-only page (bob's role)                                                 |
+| `/docs`        | FastAPI interactive OpenAPI docs                                             |
+
+## API endpoints
+
+### POST `/bioclip`
+
+Classify an image. Requires an authenticated session (`access_token` cookie is set by `POST /login`). Returns the top species prediction and links it to the current user's collection.
 
 **Request:**
 
 ```json
 {
-  "image_b64": "<base64 encoded image>",
-  "ranks": ["kingdom", "family", "species"]
+  "image_b64": "<base64 encoded image, no data: prefix>"
 }
 ```
-
-Omit `ranks` to get all 7 ranks.
 
 **Response:**
 
 ```json
 {
-  "kingdom": [
-    {"kingdom": "Animalia", "score": 0.9993},
-    ...
-  ],
-  "species": [
-    {"species": "Hydrochoeris hydrochaeris", "common_name": "Capybara", "score": 0.40},
-    ...
+  "species": "Panthera leo",
+  "common_name": "Lion",
+  "pic": "https://inaturalist-open-data.s3.amazonaws.com/photos/.../square.jpg"
+}
+```
+
+### GET `/api/animals/tree`
+
+Returns the taxonomy hierarchy of the current user's collected species as nested JSON (suitable for D3's `hierarchy` / `tree` layouts). Requires an authenticated session.
+
+**Response:**
+
+```json
+{
+  "name": "Life",
+  "children": [
+    {
+      "name": "Animalia",
+      "children": [
+        { "name": "Chordata", "children": [ ... ] }
+      ]
+    }
   ]
 }
 ```
+
+### GET `/api/users`
+
+Returns the list of users as JSON.
