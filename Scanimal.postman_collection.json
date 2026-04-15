@@ -1,8 +1,8 @@
 {
   "info": {
-    "name": "CID Florence API",
+    "name": "Scanimal API",
     "_postman_id": "2c9f27c0-8e93-44b4-bd3f-1ca9d51cc1b2",
-    "description": "Collection for testing CID Florence routes.",
+    "description": "Collection for testing Scanimal routes.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
