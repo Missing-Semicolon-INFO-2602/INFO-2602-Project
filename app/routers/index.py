@@ -24,5 +24,3 @@ async def index_view(
         secure=True
     )
     return response
-
-# homepage can be list of all animals in database for anyone to browse, even if not logged in

@@ -10,12 +10,12 @@ from contextlib import asynccontextmanager
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # print("Loading models, this may take a while...")
-    # print("Note: If this is the first time the app has been run, models will need to be downloaded and cached, future runs will be much faster")
-    # from app.inference import florence, bioclip
-    # app.state.florence = florence
-    # app.state.bioclip = bioclip
-    # print("Models loaded.")
+    print("Loading models, this may take a while...")
+    print("Note: If this is the first time the app has been run, models will need to be downloaded and cached, future runs will be much faster")
+    from inference import florence, bioclip
+    app.state.florence = florence
+    app.state.bioclip = bioclip
+    print("Models loaded.")
     
     from app.database import init
     init()
@@ -64,6 +64,7 @@ def bioclip_infer(req: BioclipRequest):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     return result
+
 
 if __name__ == "__main__":
     uvicorn.run("app.main:app", host=get_settings().app_host, port=get_settings().app_port, reload=get_settings().env.lower()!="production")

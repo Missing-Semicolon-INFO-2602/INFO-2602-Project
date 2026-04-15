@@ -2,16 +2,13 @@ from pwdlib import PasswordHash
 from datetime import timedelta, datetime, timezone
 import jwt
 from jwt.exceptions import InvalidTokenError
-from typing import Annotated, TYPE_CHECKING
-from fastapi import Depends, HTTPException, status, Request
-
-if TYPE_CHECKING:
-    from app.dependencies.session import SessionDep
-
 from app.config import get_settings
 from app.models.user import User
+from app.database import get_session, SessionDep
 from sqlmodel import select
 from fastapi.security import OAuth2PasswordBearer
+from typing import Annotated
+from fastapi import Depends, HTTPException, status, Request
 
 ALGORITHM = "HS256"
 password_hash = PasswordHash.recommended()
@@ -20,10 +17,6 @@ def encrypt_password(password:str):
     return password_hash.hash(password)
 
 def verify_password(plaintext_password:str, encrypted_password):
-    print("\n\n\n\n\n\n\n\n")
-    print(len(password_hash.hashers))
-    print(password_hash.hashers)
-    print("\n\n\n\n\n\n\n\n")
     return password_hash.verify(password=plaintext_password, hash=encrypted_password)
 
 def create_access_token(data: dict, expires_delta: timedelta = timedelta(minutes=get_settings().jwt_access_token_expires)):
@@ -33,7 +26,7 @@ def create_access_token(data: dict, expires_delta: timedelta = timedelta(minutes
     encoded_jwt = jwt.encode(to_encode, get_settings().secret_key, algorithm=get_settings().jwt_algorithm)
     return encoded_jwt
 
-async def get_current_user(request:Request, db:"SessionDep")->User:
+async def get_current_user(request:Request, db:SessionDep)->User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -48,7 +41,7 @@ async def get_current_user(request:Request, db:"SessionDep")->User:
     elif auth_cookie: # Web auth
         token = auth_cookie.split(" ")[1]
     try:
-        payload = jwt.decode(token, get_settings().secret_key, algorithms=[get_settings().jwt_algorithm])
+        payload = jwt.decode(token, get_settings().secret_key, algorithms=[ALGORITHM])
         user_id = int(payload.get("sub",None))
     except InvalidTokenError:
         raise credentials_exception
@@ -58,7 +51,7 @@ async def get_current_user(request:Request, db:"SessionDep")->User:
         raise credentials_exception
     return user
 
-async def is_logged_in(request: Request, db:"SessionDep"):
+async def is_logged_in(request: Request, db:SessionDep):
     try:
         await get_current_user(request, db)
         return True
