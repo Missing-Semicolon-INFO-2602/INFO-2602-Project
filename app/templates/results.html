@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Homepage</title>
+  <title>Scan Animal</title>
   <link rel="stylesheet" href="/static/css/app.css" />
 </head>
 <body>
@@ -15,28 +15,36 @@
     <div class="logo">&lt;LOGO&gt;</div>
 
     <!-- Title -->
-    <h1>Results</h1>
+    <h1>Scan Animal</h1>
 
-    <!-- Profile card -->
-    <div class="profile-card">
-      <div class="profile-pic">Animal Picture</div>
-      <div class="user-level">Animal Name</div>
+    <div id="drop-zone" class="drop-zone">
+      <p>Drop an image here or click to pick</p>
+      <input type="file" id="file-input" accept="image/*" hidden>
+    </div>
+
+    <div id="status" class="status"></div>
+
+    <div id="result" class="profile-card" hidden>
+      <img id="result-pic" class="profile-pic" alt="">
+      <div id="result-name" class="user-level"></div>
     </div>
 
     <!-- Buttons -->
     <div class="menu">
 
-  <a href="/share">
-    <button>Share</button>
+  <a href="/">
+    <button>Back</button>
   </a>
 
-  <a href="/">
-    <button>Confirm</button>
+  <a href="/collection">
+    <button>Collection</button>
   </a>
 
 </div>
 
   </div>
+
+  <script src="/static/js/upload.js" defer></script>
 
 </body>
 </html>

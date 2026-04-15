@@ -16,16 +16,16 @@ async def user_home_view(
 ):
     if await is_admin(user):
         return RedirectResponse(url=request.url_for("admin_home_view"), status_code=status.HTTP_303_SEE_OTHER)
-        
+
     return templates.TemplateResponse(
-        request=request, 
+        request=request,
         name="app.html",
         context={
             "user": user
         }
     )
-    
-    
+
+
 #decided not to use rn
 # @router.post("/florence")
 # def florence_infer(req: FlorenceRequest):
@@ -40,8 +40,10 @@ def bioclip_infer(
     db:SessionDep,
     req: BioclipRequest
 ):
+    if not getattr(request.app.state, "bioclip", None):
+        raise HTTPException(status_code=503, detail="BioCLIP model not loaded")
     try:
-        result = router.state.bioclip.infer(req.image_b64, req.ranks)
+        result = request.app.state.bioclip.infer(req.image_b64, req.ranks)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -63,4 +65,7 @@ def bioclip_infer(
         full_species = species_prediction if isinstance(species_prediction, str) else ""
 
     genus, species = split_species_name(full_species)
-    add_user_animal(user, genus, species, req.image_b64)
+    animal = add_user_animal(user, genus, species, req.image_b64)
+    if not animal:
+        raise HTTPException(status_code=404, detail="Could not identify animal")
+    return {"species": animal.species, "common_name": animal.common_name, "pic": animal.pic}
