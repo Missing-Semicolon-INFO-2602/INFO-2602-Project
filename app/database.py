@@ -13,14 +13,17 @@ from app.utilities.security import encrypt_password
 
 logger = logging.getLogger(__name__)
 
-engine = create_engine(
-    get_settings().database_uri, 
-    echo=get_settings().env.lower() in ["dev", "development", "test", "testing", "staging"],
-    pool_size=get_settings().db_pool_size,
-    max_overflow=get_settings().db_additional_overflow,
-    pool_timeout=get_settings().db_pool_timeout,
-    pool_recycle=get_settings().db_pool_recycle,
-)
+_engine_kwargs = {
+    "echo": get_settings().env.lower() in ["dev", "development", "test", "testing", "staging"],
+}
+if not get_settings().database_uri.startswith("sqlite"): #sqlite uses SingletonThreadPool and rejects pool size/overflow/timeout kwargs
+    _engine_kwargs.update(
+        pool_size=get_settings().db_pool_size,
+        max_overflow=get_settings().db_additional_overflow,
+        pool_timeout=get_settings().db_pool_timeout,
+        pool_recycle=get_settings().db_pool_recycle,
+    )
+engine = create_engine(get_settings().database_uri, **_engine_kwargs)
 
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
