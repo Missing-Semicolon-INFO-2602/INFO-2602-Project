@@ -9,6 +9,9 @@
 <body>
 
 <div class="page">
+  <div class="logo">
+    <img src="/static/img/logo.png" alt="Logo">
+  </div>
 
   <div class="sidebar">
     <h2>Leaderboard</h2>
@@ -20,6 +23,10 @@
       <li>{{ u.username }} &mdash; {{ u.weekly_points }}</li>
       {% endfor %}
     </ol>
+
+    <a href="/">
+      <button>Back To Home</button>
+    </a>
   </div>
 
 </div>
