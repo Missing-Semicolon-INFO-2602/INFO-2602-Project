@@ -15,7 +15,7 @@ async def user_home_view(
     users = db.exec(select(User).order_by(User.weekly_points.desc())).all() #makes templating easier
     return templates.TemplateResponse(
         request=request, 
-        name="app.html",
+        name="leaderboard.html",
         context={
             "users": users
         }
