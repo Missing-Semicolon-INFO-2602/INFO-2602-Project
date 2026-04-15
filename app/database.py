@@ -175,9 +175,9 @@ def add_user_animal(user, genus, species, img_b64):
 
 def seed_demo_users(db):
     demo_users = [
-        {"username": "john", "email": "john@test.mail", "password": "1234", "points": 1},
         {"username": "alice", "email": "alice@test.mail", "password": "1234", "points": 3},
-        {"username": "charlie", "email": "charlie@test.mail", "password": "1234", "points": 5}
+        {"username": "charlie", "email": "charlie@test.mail", "password": "1234", "points": 5},
+        {"username": "bob", "email": "bob@test.mail", "password": "bobpass", "points": 0}
     ]
     
     animals = db.exec(select(Animal).limit(10)).all()
@@ -217,8 +217,8 @@ def seed_demo_users(db):
 def init():
     create_db_and_tables()    
     with get_cli_session() as db:
-        if not db.exec(select(Admin).where(Admin.username == "bob")).first():
-            admin = Admin(username="bob", email="bob@test.mail", password=encrypt_password("1234"))
+        if not db.exec(select(Admin).where(Admin.username == "john")).first():
+            admin = Admin(username="john", email="john@test.mail", password=encrypt_password("1234"))
             db.add(admin)
             db.commit()
             print("Admin user created.")

@@ -13,7 +13,7 @@ class UserRepository:
 
     def create(self, user_data: UserBase) -> Optional[User]:
         try:
-            user_db = User.model_validate(user_data)
+            user_db = User(**user_data.model_dump()) #constructor gives a properly ORM-instrumented instance, unlike model_validate
             self.db.add(user_db)
             self.db.commit()
             self.db.refresh(user_db)
