@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Page</title>
+  <title>My Collection</title>
   <link rel="stylesheet" href="/static/css/app.css" />
 </head>
 
@@ -11,44 +11,44 @@
 
 <div class="page">
 
-  <!-- TOP PROFILE BAR -->
   <div class="profile-header">
-    User profile
+    My Collection
   </div>
 
-  <!-- COLLECTED ANIMALS SECTION -->
   <div class="collection-container">
 
-    <h2 class="section-title">Collected Animals</h2>
+    <h2 class="section-title">Animals I've Caught</h2>
 
-    <form method="get" class="search-form">
-      <input type="text" name="q" value="{{ q or '' }}" placeholder="Search by name or species">
-      <button type="submit">Search</button>
-    </form>
-
+    {% if user_animals %}
     <div class="animal-grid">
 
-      {% for animal in animals %}
-
+      {% for ua in user_animals %}
       <div class="animal-card">
         <div class="animal-image">
-          {% if animal.pic %}<img src="{{ animal.pic }}" alt="{{ animal.common_name }}">{% endif %}
+          {% if ua.user_pic and ua.user_pic != "seeded" %}
+          <img src="data:image/jpeg;base64,{{ ua.user_pic }}" alt="{{ ua.animal.common_name }}">
+          {% elif ua.animal.pic %}
+          <img src="{{ ua.animal.pic }}" alt="{{ ua.animal.common_name }}">
+          {% endif %}
         </div>
         <div class="animal-name">
-          {{ animal.common_name }}
+          {{ ua.animal.common_name }}
         </div>
+        <div class="user-level">{{ ua.date_added_str }}</div>
       </div>
-
       {% endfor %}
 
-      <a href="/">
-        <button>Back</button>
-      </a>
-
     </div>
+    {% else %}
+    <p class="section-title">No animals yet &mdash; head to Scan Animal to catch your first.</p>
+    {% endif %}
 
-    <h2 class="section-title">Animal Map</h2>
+    <h2 class="section-title">My Animal Map</h2>
     <div id="tree"></div>
+
+    <a href="/">
+      <button>Back</button>
+    </a>
 
   </div>
 
