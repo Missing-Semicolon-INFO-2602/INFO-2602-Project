@@ -20,16 +20,21 @@
 
     <h2 class="section-title">Collected Animals</h2>
 
+    <form method="get" class="search-form">
+      <input type="text" name="q" value="{{ q or '' }}" placeholder="Search by name or species">
+      <button type="submit">Search</button>
+    </form>
+
     <div class="animal-grid">
 
       {% for animal in animals %}
 
       <div class="animal-card">
         <div class="animal-image">
-          {{ animal.emoji }}
+          {% if animal.pic %}<img src="{{ animal.pic }}" alt="{{ animal.common_name }}">{% endif %}
         </div>
         <div class="animal-name">
-          {{ animal.name }}
+          {{ animal.common_name }}
         </div>
       </div>
 
@@ -41,9 +46,15 @@
 
     </div>
 
+    <h2 class="section-title">Animal Map</h2>
+    <div id="tree"></div>
+
   </div>
 
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="/static/js/tree.js" defer></script>
 
 </body>
 </html>

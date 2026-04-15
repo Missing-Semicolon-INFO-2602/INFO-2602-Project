@@ -1,5 +1,3 @@
-import json
-
 def insert_path(root, path):
     current = root
     for level in path:
@@ -11,19 +9,9 @@ def insert_path(root, path):
         else:
             current = found
 
-tree = {"name": "Life", "children": []}
 
-for animal in animals:
-    path = [
-        animal["kingdom"],
-        animal["phylum"],
-        animal["class"],
-        animal["order"],
-        animal["family"],
-        animal["genus"],
-        animal["species"]
-    ]
-    insert_path(tree, path)
-
-with open("animals_tree.json", "w") as f:
-    json.dump(tree, f, indent=2)
+def build_tree(animals):
+    root = {"name": "Life", "children": []}
+    for a in animals:
+        insert_path(root, [a.kingdom, a.phylum, a.class_, a.order, a.family, a.species])
+    return root
