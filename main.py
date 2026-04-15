@@ -28,7 +28,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(middleware=[
     Middleware(SessionMiddleware, secret_key=get_settings().secret_key)
 ],
-    title="CID Florence",
+    title="Scanimal",
     lifespan=lifespan
 )
 

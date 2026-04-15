@@ -32,7 +32,7 @@ The job of the **repository layer** is to handle **_CRUD_** operations on a mode
 
 The job of the **service layer** is to handle the **RULES** of the application. This is where the business logic comes in such as checking to see if a user's authorized to access the data.
 
-# CID Florence
+# Scanimal
 
 A FastAPI application for animal/species identification using a vision language model:
 
@@ -95,13 +95,13 @@ classifier = TreeOfLifeClassifier(model_str=BIOCLIP_V1_MODEL_STR)
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install .
 ```
 
 For CPU-only PyTorch installations:
 
 ```bash
-pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
+pip install . --extra-index-url https://download.pytorch.org/whl/cpu
 ```
 
 On first run, models are downloaded and cached to `.huggingface/models/`. Subsequent runs load from cache.
