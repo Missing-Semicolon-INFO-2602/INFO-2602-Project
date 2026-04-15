@@ -19,7 +19,7 @@ def initialize():
         bob_db = User.model_validate(bob)
         db.add(bob_db)
         for i in range (5):
-            animal = Animal(kingdom="Animalia", phylum="Chordata", classTaxonomic="Mammalia", order="Carnivora", family="Felidae", genus="Panthera", species="Leo")
+            animal = Animal(kingdom="Animalia", phylum="Chordata", class_="Mammalia", order="Carnivora", family="Felidae", species="Leo", common_name="Lion")
             animal_db = Animal.model_validate(animal)
             db.add(animal_db)            
         db.commit()

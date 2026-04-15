@@ -29,11 +29,11 @@ class User(UserBase, table=True):
             self.weekly_points = 0
             return self
 
-        count = sum(
-            1 for user_animal in self.user_animals
+        count = len({
+            user_animal.animal_id for user_animal in self.user_animals
             if getattr(user_animal, 'date_added', None) is not None
             and user_animal.date_added.date() >= week_start
-        )
+        })
         self.weekly_points = count
         return self
     
