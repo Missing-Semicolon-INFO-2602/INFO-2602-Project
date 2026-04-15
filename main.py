@@ -14,6 +14,7 @@ async def lifespan(app: FastAPI):
     try:
         from app.inference import bioclip
         app.state.bioclip = bioclip
+        bioclip.warmup() # compiles torch kernels and caches species text embeddings so the first real request is fast
         print("BioCLIP loaded.")
     except Exception as e:
         app.state.bioclip = None

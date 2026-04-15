@@ -43,7 +43,7 @@ def bioclip_infer(
     if not getattr(request.app.state, "bioclip", None):
         raise HTTPException(status_code=503, detail="BioCLIP model not loaded")
     try:
-        result = request.app.state.bioclip.infer(req.image_b64, req.ranks)
+        result = request.app.state.bioclip.infer(req.image_b64)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
